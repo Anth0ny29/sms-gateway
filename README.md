@@ -38,27 +38,6 @@ Note the port and CONNECTION value — you'll need them in the next step.
 
 Edit `docker-compose.yml` with the values found above:
 
-```yaml
-services:
-  sms-gateway:
-    image: kyukiblade/sms-gateway:latest
-    container_name: sms-gateway
-    restart: unless-stopped
-    ports:
-      - "5000:5000"
-    devices:
-      - /dev/ttyUSB1:/dev/mobile       # ← your port
-    environment:
-      - DEVICE=/dev/mobile
-      - CONNECTION=at19200             # ← your speed
-      - PIN=                           # SIM PIN (empty = no PIN)
-      - API_USER=admin                 # API username
-      - API_PASS=changeme              # API password
-      - WEBHOOK_URL=http://192.168.1.x:8123/api/webhook/sms_received
-      - POLL_INTERVAL=2
-      - SIGNAL_REFRESH=60
-    volumes:
-      - sms-data:/var/spool/gammu/received
 
 volumes:
   sms-data:
@@ -86,20 +65,26 @@ curl http://localhost:5000/api/health
 
 Expected: `{"status":"ok","modem_active":true,"receiver_running":true,...}`
 
-## Configuration
+### Step 3 — Run
 
-| Variable | Default | Description |
-|---|---|---|
-| `DEVICE` | `/dev/mobile` | Modem path inside the container |
-| `CONNECTION` | `at` | Speed: `at`, `at9600`, `at19200`, `at115200` |
-| `PIN` | *(empty)* | SIM card PIN code |
-| `API_USER` | `admin` | API username |
-| `API_PASS` | `admin` | API password |
-| `WEBHOOK_URL` | *(empty)* | URL called on each incoming SMS |
-| `POLL_INTERVAL` | `2` | How often to check for incoming SMS (seconds) |
-| `SIGNAL_REFRESH` | `60` | How often to refresh signal info (seconds) |
+**From Docker Hub (easiest):**
+```bash
+docker compose up -d
+```
 
-> **PIN** : don't put quotes around the value. `PIN=1234` ✅ — `PIN="1234"` ❌
+**Or build from source:**
+```bash
+git clone https://github.com/Anth0ny29/sms-gateway.git
+cd sms-gateway
+docker compose up -d --build
+```
+
+### Step 4 — Verify
+```bash
+curl http://localhost:5000/api/health
+```
+
+Expected: `{"status":"ok","modem_active":true,"receiver_running":true,...}`
 
 ---
 
