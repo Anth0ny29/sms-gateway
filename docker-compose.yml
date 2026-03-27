@@ -1,0 +1,25 @@
+services:
+  sms-gateway:
+    image: VOTRE_USER/sms-gateway:latest    # ← Remplacer par votre user Docker Hub
+    # Pour builder localement à la place :
+    # build: .
+    container_name: sms-gateway
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    devices:
+      - /dev/ttyUSB1:/dev/mobile
+    environment:
+      - DEVICE=/dev/mobile
+      - CONNECTION=at19200
+      - PIN=
+      - API_USER=admin
+      - API_PASS=changeme
+      - WEBHOOK_URL=http://192.168.1.x:8123/api/webhook/sms_received
+      - POLL_INTERVAL=2
+      - SIGNAL_REFRESH=60
+    volumes:
+      - sms-data:/var/spool/gammu/received
+
+volumes:
+  sms-data:
