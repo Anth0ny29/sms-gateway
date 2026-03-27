@@ -1,6 +1,6 @@
 services:
   sms-gateway:
-    image: kyukiblade/sms-gateway:latest
+    build: .
     container_name: sms-gateway
     restart: unless-stopped
     ports:
