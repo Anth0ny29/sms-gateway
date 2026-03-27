@@ -23,7 +23,7 @@ Drop-in replacement for [pajikos/sms-gammu-gateway](https://github.com/pajikos/s
 
 Plug in your USB dongle, stop any running container (`docker stop sms-gateway`), then run:
 ```bash
-for port in /dev/ttyUSB*; do for baud in 115200 19200 9600; do if stty -F $port $baud raw -echo 2>/dev/null; then echo -e "AT+CMGF=1\r" > $port; sleep 1; timeout 2 cat $port > /tmp/at_test 2>/dev/null; grep -q "OK" /tmp/at_test && echo "✅ $port @ ${baud} → CONNECTION=at${baud}" && break 2; fi; done; done || echo "❌ No modem found"
+found=0; for d in /dev/ttyUSB* /dev/ttyACM*; do [ -e "$d" ] || continue; for b in 9600 19200 115200; do stty -F "$d" "$b" raw -echo min 0 time 5 2>/dev/null || continue; r="$( (printf "AT\r" >"$d"; timeout 1 cat "$d") 2>/dev/null | tr -d "\r" )"; if echo "$r" | grep -q "OK"; then found=1; printf "\n# Valid modem configuration\n%s\n%s\n" "device: $d" "CONNECTION: at$b"; fi; done; done; [ "$found" -eq 1 ] || echo "⚠️ Warning: No valid modem port/baudrate combination found."
 ```
 
 Example output:
