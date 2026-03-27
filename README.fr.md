@@ -41,32 +41,19 @@ docker compose up -d --build
 
 ### Identifier le modem
 
-#### Étape 1 — Trouver votre modem
+### Trouver votre modem
 
-Branchez votre clé USB, puis sur la machine hôte :
-
+Branchez votre clé USB, arrêtez le conteneur s'il tourne (`docker stop sms-gateway`), puis lancez :
 ```bash
-ls /dev/ttyUSB*
+for port in /dev/ttyUSB*; do for baud in 115200 19200 9600; do if stty -F $port $baud raw -echo 2>/dev/null; then echo -e "AT+CMGF=1\r" > $port; sleep 1; timeout 2 cat $port > /tmp/at_test 2>/dev/null; grep -q "OK" /tmp/at_test && echo "✅ $port @ ${baud} → CONNECTION=at${baud}" && break 2; fi; done; done || echo "❌ Aucun modem trouvé"
 ```
 
-Vous verrez un ou plusieurs ports (`ttyUSB0`, `ttyUSB1`...). Testez lequel répond :
-
-```bash
-stty -F /dev/ttyUSB0 9600 raw -echo
-echo -e "AT\r" > /dev/ttyUSB0 && timeout 2 cat /dev/ttyUSB0
+Exemple de résultat :
+```
+✅ /dev/ttyUSB2 @ 9600 → CONNECTION=at9600
 ```
 
-Si vous voyez `OK`, c'est le bon port. Sinon, essayez le suivant.
-
-### Étape 2 — Trouver la bonne vitesse
-
-Testez avec différentes vitesses (remplacez `9600` par `19200` ou `115200`). Celle qui retourne `OK` est la bonne.
-
-| Valeur pour `CONNECTION` | Vitesse |
-|---|---|
-| `at9600` | 9600 baud |
-| `at19200` ou `at` | 19200 baud |
-| `at115200` | 115200 baud |
+Reportez ces valeurs dans votre `docker-compose.yml` : le port dans `devices` et CONNECTION dans `environment`.
 
 ### Étape 3 — Configurer
 
