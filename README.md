@@ -17,31 +17,10 @@ Drop-in replacement for [pajikos/sms-gammu-gateway](https://github.com/pajikos/s
 
 ---
 
-## Installation
 
-### Option A — From Docker Hub (easiest)
+## Getting Started
 
-```bash
-docker pull kyukiblade/sms-gateway:latest
-```
-
-Download the [`docker-compose.yml`](docker-compose.yml), edit the 3 essential values (modem port, speed, password), then:
-
-```bash
-docker compose up -d
-```
-
-### Option B — Build from source
-
-```bash
-git clone https://github.com/kyukiblade/sms-gateway.git
-cd sms-gateway
-docker compose up -d --build
-```
-
-### Identify your modem
-
-### Find your modem
+### Step 1 — Find your modem
 
 Plug in your USB dongle, stop any running container (`docker stop sms-gateway`), then run:
 ```bash
@@ -53,11 +32,11 @@ Example output:
 ✅ /dev/ttyUSB2 @ 9600 → CONNECTION=at9600
 ```
 
-Use these values in your `docker-compose.yml`: the port in `devices` and the CONNECTION value in `environment`.
+Note the port and CONNECTION value — you'll need them in the next step.
 
-### Step 3 — Configure
+### Step 2 — Configure
 
-Edit `docker-compose.yml` with your values:
+Edit `docker-compose.yml` with the values found above:
 
 ```yaml
 services:
@@ -85,21 +64,27 @@ volumes:
   sms-data:
 ```
 
-### Step 4 — Run
 
+### Step 3 — Run
+
+**From Docker Hub (easiest):**
 ```bash
+docker compose up -d
+```
+
+**Or build from source:**
+```bash
+git clone https://github.com/Anth0ny29/sms-gateway.git
+cd sms-gateway
 docker compose up -d --build
 ```
 
-### Step 5 — Verify
-
+### Step 4 — Verify
 ```bash
 curl http://localhost:5000/api/health
 ```
 
-You should see `"modem_active": true`.
-
----
+Expected: `{"status":"ok","modem_active":true,"receiver_running":true,...}`
 
 ## Configuration
 
