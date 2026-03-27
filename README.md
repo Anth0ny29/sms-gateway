@@ -22,7 +22,7 @@ Drop-in replacement for [pajikos/sms-gammu-gateway](https://github.com/pajikos/s
 ### Option A — From Docker Hub (easiest)
 
 ```bash
-docker pull YOURUSERNAME/sms-gateway:latest
+docker pull kyukiblade/sms-gateway:latest
 ```
 
 Download the [`docker-compose.yml`](docker-compose.yml), edit the 3 essential values (modem port, speed, password), then:
@@ -34,7 +34,7 @@ docker compose up -d
 ### Option B — Build from source
 
 ```bash
-git clone https://github.com/YOURUSERNAME/sms-gateway.git
+git clone https://github.com/kyukiblade/sms-gateway.git
 cd sms-gateway
 docker compose up -d --build
 ```

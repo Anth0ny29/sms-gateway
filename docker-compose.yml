@@ -1,6 +1,6 @@
 services:
   sms-gateway:
-    image: VOTRE_USER/sms-gateway:latest    # ← Remplacer par votre user Docker Hub
+    image: kyukiblade/sms-gateway:latest    # ← Remplacer par votre user Docker Hub
     # Pour builder localement à la place :
     # build: .
     container_name: sms-gateway
