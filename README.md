@@ -17,7 +17,6 @@ Drop-in replacement for [pajikos/sms-gammu-gateway](https://github.com/pajikos/s
 
 ---
 
-
 ## Getting Started
 
 ### Step 1 — Find your modem
@@ -37,33 +36,31 @@ Note the port and CONNECTION value — you'll need them in the next step.
 ### Step 2 — Configure
 
 Edit `docker-compose.yml` with the values found above:
-
+```yaml
+services:
+  sms-gateway:
+    image: kyukiblade/sms-gateway:latest
+    container_name: sms-gateway
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    devices:
+      - /dev/ttyUSB2:/dev/mobile       # ← your port from step 1
+    environment:
+      - DEVICE=/dev/mobile
+      - CONNECTION=at9600              # ← your speed from step 1
+      - PIN=                           # SIM PIN (empty = no PIN)
+      - API_USER=admin
+      - API_PASS=changeme              # ← change this
+      - WEBHOOK_URL=http://192.168.1.x:8123/api/webhook/sms_received
+      - POLL_INTERVAL=2
+      - SIGNAL_REFRESH=60
+    volumes:
+      - sms-data:/var/spool/gammu/received
 
 volumes:
   sms-data:
 ```
-
-
-### Step 3 — Run
-
-**From Docker Hub (easiest):**
-```bash
-docker compose up -d
-```
-
-**Or build from source:**
-```bash
-git clone https://github.com/Anth0ny29/sms-gateway.git
-cd sms-gateway
-docker compose up -d --build
-```
-
-### Step 4 — Verify
-```bash
-curl http://localhost:5000/api/health
-```
-
-Expected: `{"status":"ok","modem_active":true,"receiver_running":true,...}`
 
 ### Step 3 — Run
 
@@ -91,7 +88,6 @@ Expected: `{"status":"ok","modem_active":true,"receiver_running":true,...}`
 ## Quick usage
 
 ### Send an SMS
-
 ```bash
 curl -u admin:changeme \
   -H "Content-Type: application/json" \
@@ -100,13 +96,11 @@ curl -u admin:changeme \
 ```
 
 ### View received SMS
-
 ```bash
 curl -u admin:changeme http://localhost:5000/api/sms
 ```
 
 ### Check modem status
-
 ```bash
 curl -u admin:changeme http://localhost:5000/api/modem/status
 ```
@@ -124,7 +118,6 @@ Interactive Swagger docs: `http://<ip>:5000/docs`
 ### `POST /api/sms` — Send an SMS
 
 Long messages and emojis are handled automatically.
-
 ```bash
 curl -u admin:changeme \
   -H "Content-Type: application/json" \
@@ -139,7 +132,6 @@ curl -u admin:changeme \
 | `smsc` | ❌ | SMS center override (rarely needed) |
 
 Response:
-
 ```json
 {"status": "sent", "message": "Sent 2 part(s)", "number": "+1234567890"}
 ```
@@ -147,7 +139,6 @@ Response:
 ---
 
 ### `GET /api/sms` — List received SMS
-
 ```bash
 curl -u admin:changeme "http://localhost:5000/api/sms?limit=20"
 ```
@@ -157,7 +148,6 @@ curl -u admin:changeme "http://localhost:5000/api/sms?limit=20"
 | `limit` | 50 | Max number of messages |
 
 Response:
-
 ```json
 [
   {
@@ -174,7 +164,6 @@ Response:
 ---
 
 ### `GET /api/sms/{id}` — Get a specific SMS
-
 ```bash
 curl -u admin:changeme http://localhost:5000/api/sms/20260315_170530_123456_+1234567890
 ```
@@ -184,7 +173,6 @@ Same format as a list item. Returns 404 if the ID doesn't exist.
 ---
 
 ### `DELETE /api/sms/{id}` — Delete an SMS
-
 ```bash
 curl -u admin:changeme -X DELETE http://localhost:5000/api/sms/20260315_170530_123456_+1234567890
 ```
@@ -194,13 +182,11 @@ Response: `{"status": "deleted", "id": "..."}`
 ---
 
 ### `GET /api/modem/status` — Full modem status
-
 ```bash
 curl -u admin:changeme http://localhost:5000/api/modem/status
 ```
 
 Response:
-
 ```json
 {
   "modem_active": true,
@@ -243,13 +229,11 @@ Response:
 ### `GET /api/modem/signal` — Modem signal
 
 Lightweight version with signal and counters only.
-
 ```bash
 curl -u admin:changeme http://localhost:5000/api/modem/signal
 ```
 
 Response:
-
 ```json
 {
   "signal_percent": 24,
@@ -267,7 +251,6 @@ Response:
 ### `POST /api/ussd` — Send a USSD code
 
 Check balance, activate options, etc.
-
 ```bash
 curl -u admin:changeme \
   -H "Content-Type: application/json" \
@@ -282,13 +265,11 @@ Response: `{"status": "ok", "response": "Your balance is 15.30 EUR"}`
 ### `GET /api/health` — Health check
 
 **No authentication required.** Used by Docker to check the container is working.
-
 ```bash
 curl http://localhost:5000/api/health
 ```
 
 Response:
-
 ```json
 {
   "status": "ok",
@@ -301,7 +282,6 @@ Response:
 ---
 
 ### `GET /api/daemon/logs` — Logs
-
 ```bash
 curl -u admin:changeme "http://localhost:5000/api/daemon/logs?lines=50"
 ```
@@ -324,7 +304,6 @@ If you're migrating from pajikos, the old endpoints still work:
 When an SMS arrives on the modem, the gateway automatically calls the URL set in `WEBHOOK_URL`.
 
 ### What gets sent
-
 ```json
 {
   "event": "sms_received",
@@ -341,7 +320,6 @@ When an SMS arrives on the modem, the gateway automatically calls the URL set in
 Between **3 and 8 seconds** after receiving the SMS. Depends on modem speed and `POLL_INTERVAL`.
 
 ### Test the webhook without a modem
-
 ```bash
 curl -X POST -H "Content-Type: application/json" \
   -d '{"event":"sms_received","number":"+1234567890","text":"Test webhook"}' \
@@ -355,7 +333,6 @@ curl -X POST -H "Content-Type: application/json" \
 ### Send SMS from HA
 
 In `configuration.yaml`:
-
 ```yaml
 rest_command:
   send_sms:
@@ -368,7 +345,6 @@ rest_command:
 ```
 
 In an automation:
-
 ```yaml
 automation:
   - alias: "Alarm → SMS"
@@ -388,13 +364,11 @@ automation:
 The HA webhook **does not require an API key**. The `webhook_id` acts as the secret.
 
 In `docker-compose.yml`:
-
 ```yaml
 - WEBHOOK_URL=http://192.168.1.x:8123/api/webhook/sms_received
 ```
 
 In HA:
-
 ```yaml
 automation:
   - alias: "SMS received"
@@ -411,7 +385,6 @@ automation:
 ```
 
 ### Control your home by SMS
-
 ```yaml
 automation:
   - alias: "SMS commands"
@@ -445,7 +418,6 @@ automation:
 ```
 
 ### Monitor the modem in HA
-
 ```yaml
 sensor:
   - platform: rest
@@ -477,16 +449,32 @@ binary_sensor:
 
 ---
 
-## Project files
+## Configuration
 
+| Variable | Default | Description |
+|---|---|---|
+| `DEVICE` | `/dev/mobile` | Modem path inside the container |
+| `CONNECTION` | `at` | Speed: `at9600`, `at19200`, `at115200` |
+| `PIN` | *(empty)* | SIM PIN code |
+| `API_USER` | `admin` | API username |
+| `API_PASS` | `admin` | API password |
+| `WEBHOOK_URL` | *(empty)* | URL called on each received SMS |
+| `POLL_INTERVAL` | `2` | SMS check interval (seconds) |
+| `SIGNAL_REFRESH` | `60` | Signal refresh interval (seconds) |
+
+---
+
+## Project files
 ```
-gammu-sms-gateway/
+sms-gateway/
 ├── Dockerfile               # Docker image
 ├── docker-compose.yml       # Configuration
+├── docker-compose.build.yml # Build from source
 ├── requirements.txt         # Python dependencies
 ├── LICENSE
 ├── README.md                # English docs
 ├── README.fr.md             # French docs
+├── AT-COMMANDS.md           # AT commands cheatsheet
 └── app/
     ├── entrypoint.sh        # Startup script
     └── main.py              # Complete application
@@ -498,35 +486,22 @@ gammu-sms-gateway/
 
 ### "Modem not available"
 
-Check the right port and speed from the host:
-
-```bash
-stty -F /dev/ttyUSB1 9600 raw -echo
-echo -e "AT\r" > /dev/ttyUSB1 && timeout 2 cat /dev/ttyUSB1
-```
-
-Try 9600, 19200, 115200. Update `CONNECTION` in docker-compose.yml.
-
-### Container keeps restarting
-
-```bash
-docker compose logs -f sms-gateway
-```
-
-Common cause: another container is using the same modem.
-
+Re-run the detection command from Step 1. Make sure no other container is using the modem:
 ```bash
 docker ps -a | grep sms
 ```
 
-### Webhook not working
+### Container keeps restarting
+```bash
+docker compose logs -f sms-gateway
+```
 
+### Webhook not working
 ```bash
 docker exec sms-gateway env | grep WEBHOOK
 ```
 
 Test manually:
-
 ```bash
 curl -X POST -H "Content-Type: application/json" \
   -d '{"event":"sms_received","number":"+1234567890","text":"Test"}' \
@@ -534,7 +509,6 @@ curl -X POST -H "Content-Type: application/json" \
 ```
 
 ### Clean up stored SMS
-
 ```bash
 docker compose down
 docker volume rm <prefix>_sms-data
