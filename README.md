@@ -159,7 +159,7 @@ Long messages and emojis are handled automatically.
 curl -u admin:changeme \
   -H "Content-Type: application/json" \
   -X POST http://localhost:5000/api/sms \
-  -d '{"number": "+1234567890", "text": "My message", "smsc": "+1234567890"}'
+  -d '{"number": "+1234567890", "text": "My message", "smsc": ""}'
 ```
 
 | Field | Required | Description |
