@@ -28,10 +28,15 @@ for port in /dev/ttyUSB*; do for baud in 115200 19200 9600; do if stty -F $port 
 
 Example output:
 ```
-✅ /dev/ttyUSB2 @ 9600 → CONNECTION=at9600
+# Valid modem configuration
+device: /dev/ttyUSB2
+CONNECTION: at9600
+# Valid modem configuration
+device: /dev/ttyUSB3
+CONNECTION: at9600
 ```
 
-Note the port and CONNECTION value — you'll need them in the next step.
+If multiple ports show up, use the first one. Note the `device` and `CONNECTION` values — you'll need them in the next step.
 
 ### Step 2 — Configure
 
