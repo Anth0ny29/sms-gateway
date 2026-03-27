@@ -75,7 +75,7 @@ Testez avec différentes vitesses (remplacez `9600` par `19200` ou `115200`). Ce
 ```yaml
 services:
   sms-gateway:
-    build: .
+    image: kyukiblade/sms-gateway:latest
     container_name: sms-gateway
     restart: unless-stopped
     ports:

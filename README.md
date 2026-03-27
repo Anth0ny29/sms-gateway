@@ -75,7 +75,7 @@ Edit `docker-compose.yml` with your values:
 ```yaml
 services:
   sms-gateway:
-    build: .
+    image: kyukiblade/sms-gateway:latest
     container_name: sms-gateway
     restart: unless-stopped
     ports:
