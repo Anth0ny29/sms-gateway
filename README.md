@@ -58,7 +58,7 @@ services:
       - API_USER=admin
       - API_PASS=changeme              # ← change this
       - WEBHOOK_URL=http://192.168.1.x:8123/api/webhook/sms_received
-      - POLL_INTERVAL=2
+      - POLL_INTERVAL=3
       - SIGNAL_REFRESH=60
     volumes:
       - sms-data:/var/spool/gammu/received
@@ -210,7 +210,8 @@ Response:
   "battery_percent": 0,
   "sms_sent": 3,
   "sms_received": 5,
-  "sms_failed": 0
+  "sms_failed": 0,
+  "worker_respawns": 0
 }
 ```
 
@@ -228,6 +229,7 @@ Response:
 | `sms_sent` | SMS sent since startup |
 | `sms_received` | SMS received since startup |
 | `sms_failed` | Failed sends |
+| `worker_respawns` | Number of times the modem worker was automatically restarted |
 
 ---
 
@@ -280,6 +282,7 @@ Response:
   "status": "ok",
   "modem_active": true,
   "receiver_running": true,
+  "worker_respawns": 0,
   "timestamp": "2026-03-15T17:05:30+00:00"
 }
 ```
@@ -464,7 +467,7 @@ binary_sensor:
 | `API_USER` | `admin` | API username |
 | `API_PASS` | `admin` | API password |
 | `WEBHOOK_URL` | *(empty)* | URL called on each received SMS |
-| `POLL_INTERVAL` | `2` | SMS check interval (seconds) |
+| `POLL_INTERVAL` | `3` | SMS check interval (seconds) |
 | `SIGNAL_REFRESH` | `60` | Signal refresh interval (seconds) |
 
 ---

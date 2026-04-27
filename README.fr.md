@@ -219,7 +219,8 @@ Réponse :
   "battery_percent": 0,
   "sms_sent": 3,
   "sms_received": 5,
-  "sms_failed": 0
+  "sms_failed": 0,
+  "worker_respawns": 0
 }
 ```
 
@@ -237,6 +238,7 @@ Réponse :
 | `sms_sent` | SMS envoyés depuis le démarrage |
 | `sms_received` | SMS reçus depuis le démarrage |
 | `sms_failed` | Envois échoués |
+| `worker_respawns` | Nombre de fois où le worker modem a été redémarré automatiquement |
 
 ---
 
@@ -294,6 +296,7 @@ Réponse :
   "status": "ok",
   "modem_active": true,
   "receiver_running": true,
+  "worker_respawns": 0,
   "timestamp": "2026-03-15T17:05:30+00:00"
 }
 ```

@@ -14,7 +14,7 @@ services:
       - API_USER=admin
       - API_PASS=changeme
       - WEBHOOK_URL=http://192.168.1.x:8123/api/webhook/sms_received
-      - POLL_INTERVAL=2
+      - POLL_INTERVAL=3
       - SIGNAL_REFRESH=60
     volumes:
       - sms-data:/var/spool/gammu/received
