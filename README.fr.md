@@ -38,32 +38,31 @@ Notez le port et la valeur CONNECTION — vous en aurez besoin à l'étape suiva
 
 Éditez `docker-compose.yml` avec les valeurs trouvées ci-dessus :
 
+```yaml
+services:
+  sms-gateway:
+    image: kyukiblade/sms-gateway:latest
+    container_name: sms-gateway
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    devices:
+      - /dev/ttyUSB2:/dev/mobile       # ← votre port de l'étape 1
+    environment:
+      - DEVICE=/dev/mobile
+      - CONNECTION=at9600              # ← votre vitesse de l'étape 1
+      - PIN=                           # Code PIN de la SIM (vide = pas de PIN)
+      - API_USER=admin
+      - API_PASS=changeme              # ← à changer
+      - WEBHOOK_URL=http://192.168.1.x:8123/api/webhook/sms_received
+      - POLL_INTERVAL=3
+      - SIGNAL_REFRESH=60
+    volumes:
+      - sms-data:/var/spool/gammu/received
 
 volumes:
   sms-data:
 ```
-
-
-### Étape 3 — Lancer
-
-**Depuis Docker Hub (le plus simple) :**
-```bash
-docker compose up -d
-```
-
-**Ou builder depuis les sources :**
-```bash
-git clone https://github.com/Anth0ny29/sms-gateway.git
-cd sms-gateway
-docker compose up -d --build
-```
-
-### Étape 4 — Vérifier
-```bash
-curl http://localhost:5000/api/health
-```
-
-Réponse attendue : `{"status":"ok","modem_active":true,"receiver_running":true,...}`
 
 ### Étape 3 — Lancer
 
